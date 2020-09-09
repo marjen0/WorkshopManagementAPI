@@ -20,16 +20,16 @@ namespace ServiceManagement.Controllers
             {
                 new Service
                 {
-                    Id=1,
-                    EstimatedRepairTime=5,
+                    ID=1,
+                    RepairTimeInHours=5,
                     Name="generator replacement",
                     Price = 80
                 },
                 new Service
                 {
-                    Id=2,
+                    ID=2,
                     Price=40,
-                    EstimatedRepairTime=3,
+                    RepairTimeInHours=3,
                     Name="oil change"
                 }
             };

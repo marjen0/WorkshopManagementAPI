@@ -17,7 +17,7 @@ namespace ServiceManagement.Controllers
             {
                 new Workshop
                 {
-                    Id = 1,
+                    ID = 1,
                     BuildingNumber = 5,
                     City = "Kaunas",
                     Name = "GerasGaražas",
@@ -26,7 +26,7 @@ namespace ServiceManagement.Controllers
                 },
                 new Workshop
                 {
-                    Id = 1,
+                    ID = 1,
                     BuildingNumber = 5,
                     City = "Vilnius",
                     Name = "GerasGaražas",
@@ -35,7 +35,7 @@ namespace ServiceManagement.Controllers
                 },
                 new Workshop
                 {
-                    Id = 1,
+                    ID = 1,
                     BuildingNumber = 5,
                     City = "Kaunas",
                     Name = "GerasGaražas",
