@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 
 namespace ServiceManagement.Models
 {
-    public class Registration
+    public class Repair
     {
         public int ID { get; set; }
-        public DateTime DateRegistered { get; set; }
-        public DateTime DateOfRepair { get; set; }
-        public Workshop Workshop { get; set; }
+        public int VehicleID { get; set; }
+        public int MechanicID { get; set; }
         public Vehicle Vehicle { get; set; }
+        public Mechanic Mechanic { get; set; }
+        public ICollection<Service> Services { get; set; }
     }
 }
