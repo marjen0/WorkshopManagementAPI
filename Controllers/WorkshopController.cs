@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ServiceManagement.Models;
+using ServiceManagement.Repositories;
 
 namespace ServiceManagement.Controllers
 {
@@ -11,40 +12,39 @@ namespace ServiceManagement.Controllers
     [Route("api/[controller]")]
     public class WorkshopController : ControllerBase
     {
-        public ActionResult<IEnumerable<Workshop>> GetWorkshops()
-        {
-            List<Workshop> workshops = new List<Workshop>()
-            {
-                new Workshop
-                {
-                    ID = 1,
-                    BuildingNumber = 5,
-                    City = "Kaunas",
-                    Name = "GerasGaražas",
-                    PostalCode = "7412",
-                    Street = "Gedimino g."
-                },
-                new Workshop
-                {
-                    ID = 1,
-                    BuildingNumber = 5,
-                    City = "Vilnius",
-                    Name = "GerasGaražas",
-                    PostalCode = "2112",
-                    Street = "Gedimino g."
-                },
-                new Workshop
-                {
-                    ID = 1,
-                    BuildingNumber = 5,
-                    City = "Kaunas",
-                    Name = "GerasGaražas",
-                    PostalCode = "7412",
-                    Street = "Gedimino g."
-                }
-            };
+        private readonly IWorkshopRepository _workshopRepo;
 
-            return Ok(workshops);
+        public WorkshopController(IWorkshopRepository workshopRepo)
+        {
+            _workshopRepo = workshopRepo;
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Workshop>>> GetWorkshops()
+        {
+            var workshops = (await _workshopRepo.GetAllAsync()).ToList();
+
+            if (workshops.Count == 0)
+            {
+                return NotFound();
+            }
+            else
+            { 
+                return Ok(workshops);
+            }
+        }
+        [HttpPost]
+        public async Task<ActionResult> CreateWorkShop([FromBody] Workshop workshop)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            else
+            {
+                int createdID = await _workshopRepo.CreateAsync(workshop);
+                return CreatedAtAction(nameof(GetWorkshops), new { ID = createdID });
+            }
+            
         }
     }
 }

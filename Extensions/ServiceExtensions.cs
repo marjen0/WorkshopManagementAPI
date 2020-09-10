@@ -21,6 +21,8 @@ namespace ServiceManagement.Extensions
         public static void ConfigureRepositories(this IServiceCollection services)
         {
             services.AddScoped<IOfferedServiceRepository, OfferedServiceRepository>();
+            services.AddScoped<IRegistrationRepository, RegistrationRepository>();
+            services.AddScoped<IWorkshopRepository, WorkshopRepository>();
         }
         public static void ConfigureAutoMapper(this IServiceCollection services)
         {

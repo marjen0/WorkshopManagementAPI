@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ServiceManagement.Repositories;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ServiceManagement.Models
 {
-    public class Workshop
+    public class Workshop : IEntity
     {
         public int ID { get; set; }
         [MaxLength(50, ErrorMessage = "Name length is too long. Maximum length of 50 characters allowed")]
@@ -19,7 +20,6 @@ namespace ServiceManagement.Models
         public int BuildingNumber { get; set; }
         [MaxLength(5, ErrorMessage = "Postal code is too long. Maximum length of 5 characters allowed")]
         public string PostalCode { get; set; }
-        public int RegistrationID { get; set; }
 
         public ICollection<Service> Services { get; set; }
         public ICollection<Registration> Registrations { get; set; }

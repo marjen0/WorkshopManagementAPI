@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServiceManagement.Database;
 
 namespace ServiceManagement.Migrations
 {
     [DbContext(typeof(WorkshopContext))]
-    partial class WorkshopContextModelSnapshot : ModelSnapshot
+    [Migration("20200910132715_RemoveRegistrationFKFromWorkshop")]
+    partial class RemoveRegistrationFKFromWorkshop
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,13 +127,13 @@ namespace ServiceManagement.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
-                    b.Property<int?>("RepairID")
+                    b.Property<int>("RepairID")
                         .HasColumnType("int");
 
                     b.Property<int>("RepairTimeInHours")
                         .HasColumnType("int");
 
-                    b.Property<int?>("WorkshopID")
+                    b.Property<int>("WorkshopID")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
@@ -274,13 +276,17 @@ namespace ServiceManagement.Migrations
 
             modelBuilder.Entity("ServiceManagement.Models.Service", b =>
                 {
-                    b.HasOne("ServiceManagement.Models.Repair", null)
+                    b.HasOne("ServiceManagement.Models.Repair", "Repair")
                         .WithMany("Services")
-                        .HasForeignKey("RepairID");
+                        .HasForeignKey("RepairID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("ServiceManagement.Models.Workshop", null)
+                    b.HasOne("ServiceManagement.Models.Workshop", "Workshop")
                         .WithMany("Services")
-                        .HasForeignKey("WorkshopID");
+                        .HasForeignKey("WorkshopID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -34,5 +34,10 @@ namespace ServiceManagement.Controllers
                 return Ok(registrations);
             }
         }
+        [HttpPost]
+        public async Task<ActionResult> CreateRegistration([FromBody] Vehicle vehicle)
+        {
+
+        }
     }
 }

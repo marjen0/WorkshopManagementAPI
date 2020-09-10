@@ -15,10 +15,10 @@ namespace ServiceManagement.Models
         public float Price { get; set; }
         [Range(0, 50, ErrorMessage = "expected repair time value is out of range. Time value must be between 0 and 50")]
         public int RepairTimeInHours { get; set; }
-        public int WorkshopID { get; set; }
+        /*public int WorkshopID { get; set; }
         public int RepairID { get; set; }
-        public Workshop Workshop { get; set; }
-        public Repair Repair { get; set; }
+       public Workshop Workshop { get; set; }
+        public Repair Repair { get; set; }*/
 
 
 
