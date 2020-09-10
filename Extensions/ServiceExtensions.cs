@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ServiceManagement.Repositories;
+using AutoMapper;
 
 namespace ServiceManagement.Extensions
 {
@@ -20,6 +21,10 @@ namespace ServiceManagement.Extensions
         public static void ConfigureRepositories(this IServiceCollection services)
         {
             services.AddScoped<IOfferedServiceRepository, OfferedServiceRepository>();
+        }
+        public static void ConfigureAutoMapper(this IServiceCollection services)
+        {
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
     }
 }

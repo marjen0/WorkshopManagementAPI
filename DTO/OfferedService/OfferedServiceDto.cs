@@ -1,11 +1,12 @@
-﻿using ServiceManagement.Repositories;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
-
-namespace ServiceManagement.Models
+namespace ServiceManagement.DTO.OfferedService
 {
-    public class OfferedService: IEntity
+    public class OfferedServiceDto
     {
         public int ID { get; set; }
         [MaxLength(100, ErrorMessage = "service name value is too long. Maximum length is 100 characters")]
@@ -16,6 +17,3 @@ namespace ServiceManagement.Models
         public int RepairTimeInHours { get; set; }
     }
 }
-
-
-

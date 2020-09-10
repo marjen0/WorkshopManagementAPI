@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using ServiceManagement.Database;
 using ServiceManagement.Repositories;
+using AutoMapper;
+using ServiceManagement.DTO.OfferedService;
 
 namespace ServiceManagement.Controllers
 {
@@ -14,15 +16,39 @@ namespace ServiceManagement.Controllers
     public class OfferedServiceController: ControllerBase
     {
         private readonly IOfferedServiceRepository _serviceRepo;
-
-        public OfferedServiceController(IOfferedServiceRepository repo)
+        private readonly IMapper _mapper;
+        public OfferedServiceController(IOfferedServiceRepository repo, IMapper mapper)
         {
             _serviceRepo = repo ?? throw new ArgumentNullException(nameof(repo));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OfferedService>>> GetOfferedServices()
         {
-            return Ok(await _serviceRepo.GetAllAsync());
+            List<OfferedService> services = (await _serviceRepo.GetAllAsync()).ToList();
+            if (services.Count < 0)
+            {
+                return NotFound(services);
+            }
+            else
+            {
+                IEnumerable<OfferedServiceDto> mappedServices = services.Select(s => _mapper.Map<OfferedServiceDto>(s));
+                return Ok(mappedServices);
+            }
+            
+        }
+        public async Task<ActionResult<OfferedServiceDto>> CreateOfferedService([FromBody] OfferedServiceCreateDto service)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            else
+            {
+                OfferedService mappedService = _mapper.Map<OfferedService>(service);
+                int createdId = await _serviceRepo.CreateAsync(mappedService);
+                return CreatedAtAction(nameof(GetOfferedServices), new { ID = createdId });
+            }
         }
     }
 }

@@ -20,8 +20,8 @@ namespace ServiceManagement.Models
         [MaxLength(5, ErrorMessage = "Postal code is too long. Maximum length of 5 characters allowed")]
         public string PostalCode { get; set; }
         public int RegistrationID { get; set; }
-        public Registration Registration { get; set; }
 
         public ICollection<Service> Services { get; set; }
+        public ICollection<Registration> Registrations { get; set; }
     }
 }
