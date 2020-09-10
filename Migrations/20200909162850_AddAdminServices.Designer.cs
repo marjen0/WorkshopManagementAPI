@@ -3,59 +3,23 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServiceManagement.Database;
 
 namespace ServiceManagement.Migrations
 {
     [DbContext(typeof(WorkshopContext))]
-    partial class WorkshopContextModelSnapshot : ModelSnapshot
+    [Migration("20200909162850_AddAdminServices")]
+    partial class AddAdminServices
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("ServiceManagement.Models.OfferedService", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<float>("Price")
-                        .HasColumnType("real");
-
-                    b.Property<int>("RepairTimeInHours")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("OfferedService");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            Name = "Padangu keitimas",
-                            Price = 50f,
-                            RepairTimeInHours = 2
-                        },
-                        new
-                        {
-                            ID = 2,
-                            Name = "Stabdziu kaladeliu keitimas",
-                            Price = 20f,
-                            RepairTimeInHours = 1
-                        });
-                });
 
             modelBuilder.Entity("ServiceManagement.Models.Registration", b =>
                 {

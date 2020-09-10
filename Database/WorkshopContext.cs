@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ServiceManagement.Models;
+using ServiceManagement.Extensions;
 
 namespace ServiceManagement.Database
 {
@@ -20,13 +21,17 @@ namespace ServiceManagement.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Mechanic>().ToTable("Mechanic");
+            //modelBuilder.Entity<Mechanic>().ToTable("Mechanic");
             modelBuilder.Entity<Registration>().ToTable("Registration");
             modelBuilder.Entity<Repair>().ToTable("Repair");
             modelBuilder.Entity<Service>().ToTable("Service");
             modelBuilder.Entity<User>().ToTable("User");
             modelBuilder.Entity<Vehicle>().ToTable("Vehicle");
             modelBuilder.Entity<Workshop>().ToTable("Workshop");
+            modelBuilder.Entity<OfferedService>().ToTable("OfferedService");
+
+            // Seed data
+            modelBuilder.SeedDatabse();            
         }
 
     }

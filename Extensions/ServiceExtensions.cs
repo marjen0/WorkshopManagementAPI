@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ServiceManagement.Repositories;
 
 namespace ServiceManagement.Extensions
 {
@@ -16,6 +17,9 @@ namespace ServiceManagement.Extensions
         {
             services.AddDbContext<WorkshopContext>(options => options.UseSqlServer(connectionString));
         }
-        
+        public static void ConfigureRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IOfferedServiceRepository, OfferedServiceRepository>();
+        }
     }
 }

@@ -7,16 +7,18 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200909150451_Models.cs" />
     <Compile Remove="Migrations\20200909150451_Models.Designer.cs" />
+    <Compile Remove="Migrations\20200909163416_RemoveFieldsFromServiceAdmin.cs" />
+    <Compile Remove="Migrations\20200909163416_RemoveFieldsFromServiceAdmin.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="DTO\" />
     <Folder Include="Services\" />
-    <Folder Include="Repositories\" />
     <Folder Include="Profiles\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />

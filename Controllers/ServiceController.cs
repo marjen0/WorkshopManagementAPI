@@ -10,8 +10,9 @@ namespace ServiceManagement.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ServiceController : ControllerBase 
+    public class ServiceController : ControllerBase
     { 
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK, Type =typeof(IEnumerable<Service>))]
         [HttpGet]
         public ActionResult<IEnumerable<Service>> GetServices()
