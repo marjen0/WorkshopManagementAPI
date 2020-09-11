@@ -20,7 +20,7 @@ namespace ServiceManagement.Repositories
             return await _context.Registrations
                 .AsNoTracking()
                 .Include(r => r.Vehicle)
-                .Include(r => r.Workshop)
+                //.Include(r => r.Workshop)
                 .ToListAsync();
         }
     }

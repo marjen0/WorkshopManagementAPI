@@ -32,6 +32,12 @@ namespace ServiceManagement.Controllers
                 return Ok(workshops);
             }
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Workshop>> GetWorkshop([FromRoute] int id)
+        {
+            var workshop = await _workshopRepo.GetWorkshopById(id);
+            return Ok(workshop);
+        }
         [HttpPost]
         public async Task<ActionResult> CreateWorkShop([FromBody] Workshop workshop)
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ServiceManagement.Repositories;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,10 +9,11 @@ namespace ServiceManagement.Models
 {
     public enum UserRole
     {
+        RegularUser,
         Admin, 
         Mechanic
     }
-    public class User
+    public class User: IEntity
     {
         public int ID { get; set; }
         [MaxLength(100, ErrorMessage = "Firstname length is too long. Maximum length of 100 characters allowed")]

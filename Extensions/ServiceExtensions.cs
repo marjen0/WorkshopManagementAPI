@@ -23,6 +23,7 @@ namespace ServiceManagement.Extensions
             services.AddScoped<IOfferedServiceRepository, OfferedServiceRepository>();
             services.AddScoped<IRegistrationRepository, RegistrationRepository>();
             services.AddScoped<IWorkshopRepository, WorkshopRepository>();
+            services.AddScoped<IMechanicRrepository, MechanicRepository>();
         }
         public static void ConfigureAutoMapper(this IServiceCollection services)
         {

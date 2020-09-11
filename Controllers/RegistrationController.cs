@@ -35,9 +35,22 @@ namespace ServiceManagement.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult> CreateRegistration([FromBody] Vehicle vehicle)
+        public async Task<ActionResult> CreateRegistration([FromBody] Registration registration)
         {
-
+            registration.DateOfRepair = DateTime.Now.ToLocalTime();
+            registration.DateRegistered = DateTime.Now;
+            registration.Vehicle = new Vehicle
+            {
+                EngineCapacity = 5.3f,
+                FuelType = FuelType.Diesel,
+                Make = "BMW",
+                ManufactureDate = DateTime.Now,
+                Model="x5",
+                RegistrationNumber="LIM898",           
+            };
+            registration.WorkshopID = 1;
+            int createdID = await _registrationRepo.CreateAsync(registration);
+            return CreatedAtAction(nameof(GetRegistrations), new { ID = createdID });
         }
     }
 }

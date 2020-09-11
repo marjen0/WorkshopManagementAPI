@@ -12,6 +12,7 @@ namespace ServiceManagement.Database
     {
         public WorkshopContext(DbContextOptions<WorkshopContext> options) : base(options) { }
         public DbSet<Mechanic> Mechanics {get; set;}
+        public DbSet<Admin> Admins { get; set; }
         public DbSet<Registration> Registrations { get; set; }
         public DbSet<Repair> Repairs { get; set; }
         public DbSet<Service> Services { get; set; }

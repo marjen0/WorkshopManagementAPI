@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServiceManagement.Database;
 
 namespace ServiceManagement.Migrations
 {
     [DbContext(typeof(WorkshopContext))]
-    partial class WorkshopContextModelSnapshot : ModelSnapshot
+    [Migration("20200911071059_AddAdminModel")]
+    partial class AddAdminModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -229,13 +231,6 @@ namespace ServiceManagement.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Workshop");
-                });
-
-            modelBuilder.Entity("ServiceManagement.Models.Admin", b =>
-                {
-                    b.HasBaseType("ServiceManagement.Models.User");
-
-                    b.HasDiscriminator().HasValue("Admin");
                 });
 
             modelBuilder.Entity("ServiceManagement.Models.Mechanic", b =>

@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServiceManagement.Repositories
 {
-    public interface IWorkshopRepository: IGenericRepository<Workshop>
+    public interface IUserRepository: IGenericRepository<User>
     {
-        public Task<IEnumerable<Workshop>> GetWorkshopById(int id);
     }
 }
