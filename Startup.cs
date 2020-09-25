@@ -33,6 +33,7 @@ namespace ServiceManagement
             services.ConfigureEntityFramework(connectionString);
             services.ConfigureRepositories();
             services.ConfigureAutoMapper();
+            services.ConfigureSwagger();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,7 +48,12 @@ namespace ServiceManagement
                 app.UseHttpsRedirection();
             }
 
-
+            app.UseSwagger();
+            app.UseSwaggerUI((c) =>
+            {
+                c.SwaggerEndpoint("./swagger/v1/swagger.json", "Service Managemant API");
+                c.RoutePrefix = string.Empty;
+            });
             app.UseRouting();
 
             app.UseAuthorization();

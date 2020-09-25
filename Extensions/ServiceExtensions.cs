@@ -6,8 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ServiceManagement.Repositories;
 using AutoMapper;
+using Microsoft.OpenApi.Models;
+using DataAccessLayer.Repositories;
 
 namespace ServiceManagement.Extensions
 {
@@ -28,6 +29,13 @@ namespace ServiceManagement.Extensions
         public static void ConfigureAutoMapper(this IServiceCollection services)
         {
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        }
+        public static void ConfigureSwagger(this IServiceCollection services)
+        {
+            services.AddSwaggerGen((options) => 
+            {
+                options.SwaggerDoc("Service Managemant API", new OpenApiInfo { Title = "Service Managemant API", Version = "1" });    
+            });
         }
     }
 }

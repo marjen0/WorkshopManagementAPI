@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using DataAccessLayer.Models;
 using ServiceManagement.DTO.OfferedService;
-using ServiceManagement.Models;
 
 namespace ServiceManagement.Profiles
 {

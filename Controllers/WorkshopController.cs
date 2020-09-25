@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataAccessLayer.Models;
+using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using ServiceManagement.Models;
-using ServiceManagement.Repositories;
+
 
 namespace ServiceManagement.Controllers
 {

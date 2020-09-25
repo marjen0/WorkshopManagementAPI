@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using DataAccessLayer.Models;
+using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using ServiceManagement.Models;
-using ServiceManagement.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,24 +14,39 @@ namespace ServiceManagement.Controllers
     public class RegistrationController: ControllerBase
     {
         IRegistrationRepository _registrationRepo;
+        IWorkshopRepository _workshopRepo;
         IMapper _mapper;
-        public RegistrationController(IRegistrationRepository registrationRepo, IMapper mapper)
+        public RegistrationController(IRegistrationRepository registrationRepo, IWorkshopRepository workshopRepo, IMapper mapper)
         {
             _registrationRepo = registrationRepo;
+            _workshopRepo = workshopRepo;
             mapper = _mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Registration>>> GetRegistrations()
         {
-            var registrations = (await _registrationRepo.GetRegistrations()).ToList();
-            if(registrations.Count == 1)
+            var registrations = (await _registrationRepo.GetRegistrations());
+            if(registrations == null)
             {
                 return NotFound(registrations);
             }
             else
             {
                 return Ok(registrations);
+            }
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Registration>> GetSingleRegistration([FromRoute] int id)
+        {
+            var registration = await _registrationRepo.GetSingleRegistration(id);
+            if (registration == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(registration);
             }
         }
         [HttpPost]
@@ -41,16 +56,17 @@ namespace ServiceManagement.Controllers
             registration.DateRegistered = DateTime.Now;
             registration.Vehicle = new Vehicle
             {
+                
                 EngineCapacity = 5.3f,
                 FuelType = FuelType.Diesel,
-                Make = "BMW",
+                Make = "BMWwwwwwwwwwwwwwwwwww",
                 ManufactureDate = DateTime.Now,
                 Model="x5",
-                RegistrationNumber="LIM898",           
+                RegistrationNumber="LIM788",           
             };
-            registration.WorkshopID = 1;
+            registration.WorkshopID = 2;
             int createdID = await _registrationRepo.CreateAsync(registration);
-            return CreatedAtAction(nameof(GetRegistrations), new { ID = createdID });
+            return CreatedAtAction(nameof(GetRegistrations), new { id = createdID });
         }
     }
 }

@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ServiceManagement.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ServiceManagement.Database;
-using ServiceManagement.Repositories;
 using AutoMapper;
 using ServiceManagement.DTO.OfferedService;
+using DataAccessLayer.Models;
+using DataAccessLayer.Repositories;
 
 namespace ServiceManagement.Controllers
 {
