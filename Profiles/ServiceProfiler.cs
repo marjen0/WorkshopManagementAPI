@@ -1,0 +1,37 @@
+﻿using AutoMapper;
+using DataAccessLayer.Models;
+using ServiceManagement.DTO.Service;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ServiceManagement.Profiles
+{
+    public class ServiceProfiler : Profile
+    {
+        public ServiceProfiler()
+        {
+            CreateMap<Service, ServiceDto>().AfterMap((source, dest) =>
+            {
+                dest.ID = source.ID;
+                dest.Name = source.Name;
+                dest.Price = source.Price;
+                dest.RepairTimeInHours = source.RepairTimeInHours;
+            });
+            CreateMap<ServiceDto, Service>().AfterMap((source, dest) =>
+            {
+                dest.Name = source.Name;
+                dest.Price = source.Price;
+                dest.RepairTimeInHours = source.RepairTimeInHours;
+            });
+            CreateMap<ServiceCreateDto, Service>().AfterMap((source, dest) =>
+            {
+                dest.Name = source.Name;
+                dest.Price = source.Price;
+                dest.RepairTimeInHours = source.RepairTimeInHours;
+                dest.ID = source.ID;
+            });
+        }
+    }
+}
