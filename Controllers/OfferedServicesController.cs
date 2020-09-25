@@ -12,11 +12,11 @@ namespace ServiceManagement.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class OfferedServiceController: ControllerBase
+    public class OfferedServicesController: ControllerBase
     {
         private readonly IOfferedServiceRepository _serviceRepo;
         private readonly IMapper _mapper;
-        public OfferedServiceController(IOfferedServiceRepository repo, IMapper mapper)
+        public OfferedServicesController(IOfferedServiceRepository repo, IMapper mapper)
         {
             _serviceRepo = repo ?? throw new ArgumentNullException(nameof(repo));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));

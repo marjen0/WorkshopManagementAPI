@@ -11,11 +11,11 @@ namespace ServiceManagement.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class WorkshopController : ControllerBase
+    public class WorkshopsController : ControllerBase
     {
         private readonly IWorkshopRepository _workshopRepo;
 
-        public WorkshopController(IWorkshopRepository workshopRepo)
+        public WorkshopsController(IWorkshopRepository workshopRepo)
         {
             _workshopRepo = workshopRepo;
         }

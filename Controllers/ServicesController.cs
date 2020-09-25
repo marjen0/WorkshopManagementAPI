@@ -11,7 +11,7 @@ namespace ServiceManagement.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ServiceController : ControllerBase
+    public class ServicesController : ControllerBase
     { 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK, Type =typeof(IEnumerable<Service>))]

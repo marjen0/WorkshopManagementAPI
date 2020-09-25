@@ -12,11 +12,11 @@ namespace ServiceManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MechanicController : ControllerBase
+    public class MechanicsController : ControllerBase
     {
         private readonly IMechanicRrepository _mechanicRepo;
 
-        public MechanicController(IMechanicRrepository mechanicRepo)
+        public MechanicsController(IMechanicRrepository mechanicRepo)
         {
             _mechanicRepo = mechanicRepo ?? throw new ArgumentNullException(nameof(mechanicRepo));
         }

@@ -11,12 +11,12 @@ namespace ServiceManagement.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class RegistrationController: ControllerBase
+    public class RegistrationsController: ControllerBase
     {
         IRegistrationRepository _registrationRepo;
         IWorkshopRepository _workshopRepo;
         IMapper _mapper;
-        public RegistrationController(IRegistrationRepository registrationRepo, IWorkshopRepository workshopRepo, IMapper mapper)
+        public RegistrationsController(IRegistrationRepository registrationRepo, IWorkshopRepository workshopRepo, IMapper mapper)
         {
             _registrationRepo = registrationRepo;
             _workshopRepo = workshopRepo;
