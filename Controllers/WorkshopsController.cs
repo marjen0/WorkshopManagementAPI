@@ -6,7 +6,9 @@ using AutoMapper;
 using DataAccessLayer.Models;
 using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using ServiceManagement.DTO.Registration;
 using ServiceManagement.DTO.Service;
+using ServiceManagement.DTO.Vehicle;
 using ServiceManagement.DTO.Workshop;
 
 
@@ -18,13 +20,17 @@ namespace ServiceManagement.Controllers
     {
         private readonly IWorkshopRepository _workshopRepo;
         private readonly IServiceRepository _serviceRepo;
+        private readonly IRegistrationRepository _registrationRepo;
+        private readonly IVehicleRepository _vehicleRepo;
         private readonly IMapper _mapper;
 
-        public WorkshopsController(IWorkshopRepository workshopRepo, IServiceRepository serviceRepo, IMapper mapper)
+        public WorkshopsController(IWorkshopRepository workshopRepo, IServiceRepository serviceRepo, IMapper mapper, IRegistrationRepository registrationRepo, IVehicleRepository vehicleRepo)
         {
-            _workshopRepo = workshopRepo;
-            _serviceRepo = serviceRepo;
-            _mapper = mapper;
+            _workshopRepo = workshopRepo ?? throw new ArgumentNullException(nameof(workshopRepo));
+            _serviceRepo = serviceRepo ?? throw new ArgumentNullException(nameof(serviceRepo));
+            _registrationRepo = registrationRepo ?? throw new ArgumentNullException(nameof(registrationRepo));
+            _vehicleRepo = vehicleRepo ?? throw new ArgumentNullException(nameof(vehicleRepo));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<WorkshopDto>>> GetWorkshops()
@@ -125,6 +131,39 @@ namespace ServiceManagement.Controllers
                 IEnumerable<ServiceDto> serviceDtos = workshop.Services.Select(w => _mapper.Map<ServiceDto>(w));
                 return Ok(serviceDtos);
             }
+        }
+        [HttpPost("{workshopId}/registrations")]
+        public async Task<ActionResult> CreateRegistration(int workshopId, [FromBody] RegistrationCreateDto registrationCreateDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            Workshop workshop = await _workshopRepo.GetWorkshopById(workshopId);
+            if (workshop == null)
+            {
+                return NotFound(new { error = $"workshop with id {workshop} could not be found" });
+            }
+            Vehicle vehicle = _mapper.Map<Vehicle>(registrationCreateDto.Vehicle);
+            int createdVehicleId = await _vehicleRepo.CreateAsync(vehicle);
+
+            Registration registration = _mapper.Map<Registration>(registrationCreateDto);
+            registration.VehicleID = createdVehicleId;
+            registration.DateRegistered = DateTime.Now;
+            await _registrationRepo.CreateAsync(registration);
+            return Ok();
+            
+        }
+        [HttpGet("{workshopId}/registrations")]
+        public async Task<ActionResult<IEnumerable<RegistrationDto>>> GetWorkshopRegistrations(int workshopId)
+        {
+            Workshop workshop = await _workshopRepo.GetWorkshopById(workshopId);
+            if (workshop == null)
+            {
+                return NotFound(new { error = $"workshop with id {workshopId} could not be found"});
+            }
+            IEnumerable<RegistrationDto> registrationDto = workshop.Registrations.Select(r => _mapper.Map<RegistrationDto>(r));
+            return Ok(registrationDto);
         }
     }
 }
