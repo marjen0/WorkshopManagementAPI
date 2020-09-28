@@ -155,7 +155,7 @@ namespace ServiceManagement.Controllers
             
         }
         [HttpGet("{workshopId}/registrations")]
-        public async Task<ActionResult<IEnumerable<RegistrationDto>>> GetWorkshopRegistrations(int workshopId)
+        public async Task<ActionResult<IEnumerable<RegistrationDto>>> GetWorkshopRegistrations([FromRoute] int workshopId)
         {
             Workshop workshop = await _workshopRepo.GetWorkshopById(workshopId);
             if (workshop == null)
@@ -164,6 +164,40 @@ namespace ServiceManagement.Controllers
             }
             IEnumerable<RegistrationDto> registrationDto = workshop.Registrations.Select(r => _mapper.Map<RegistrationDto>(r));
             return Ok(registrationDto);
+        }
+        [HttpGet("{workshopId}/registrations/{registrationId}")]
+        public async Task<ActionResult<RegistrationDto>> GetWorkshopSingleRegistration([FromRoute] int workshopId, [FromRoute] int registrationId)
+        {
+            Registration registration = await _registrationRepo.GetSingleRegistration(workshopId, registrationId);
+            if (registration == null)
+            {
+                return NotFound(new { error = $"registration with id {registrationId} could not be found in workshop with id {workshopId}" });
+            }
+            RegistrationDto registrationDto = _mapper.Map<RegistrationDto>(registration);
+            return Ok(registrationDto);
+        }
+        [HttpDelete("{workshopId}/registrations/{registrationId}")]
+        public async Task<ActionResult> DeleteSingleRegistration([FromRoute] int workshopId, [FromRoute] int registrationId)
+        {
+            Registration registration = await _registrationRepo.GetSingleRegistration(workshopId, registrationId);
+            if (registration == null)
+            {
+                return NotFound(new { error = $"registration with id {registrationId} could not be found in workshop with id {workshopId}" });
+            }
+            await _registrationRepo.DeleteAsync(registration);
+            return Ok();
+        }
+        [HttpPut("{workshopId}/registrations/{registrationId}")]
+        public async Task<ActionResult> UpdateRegistration([FromRoute] int workshopId, [FromRoute] int registrationId, [FromBody] RegistrationUpdateDto registrationUpdateDto)
+        {
+            Registration registration = await _registrationRepo.GetSingleRegistration(workshopId, registrationId);
+            if (registration == null)
+            {
+                return NotFound(new { error = $"registration with id {registrationId} could not be found in workshop with id {workshopId}" });
+            }
+            registration.DateOfRepair = registrationUpdateDto.DateOfRepair;
+            await _registrationRepo.UpdateAsync(registration);
+            return Ok();
         }
     }
 }

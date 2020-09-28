@@ -31,6 +31,12 @@ namespace ServiceManagement.Profiles
                 dest.Vehicle.RegistrationNumber = source.Vehicle.RegistrationNumber;
                 dest.Vehicle.EngineCapacity = source.Vehicle.EngineCapacity;
             });
+            CreateMap<RegistrationUpdateDto, Registration>().AfterMap((source, dest) =>
+            {
+                dest.DateOfRepair = source.DateOfRepair;
+
+                
+            });
         }   
     }
 }
