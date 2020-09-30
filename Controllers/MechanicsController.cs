@@ -15,18 +15,22 @@ namespace ServiceManagement.Controllers
     public class MechanicsController : ControllerBase
     {
         private readonly IMechanicRrepository _mechanicRepo;
-
         public MechanicsController(IMechanicRrepository mechanicRepo)
         {
             _mechanicRepo = mechanicRepo ?? throw new ArgumentNullException(nameof(mechanicRepo));
         }
-
+        /// <summary>
+        /// Returns all mechanics 
+        /// </summary>
+        /// <returns>A list of mechanics</returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Mechanic>>> GetAllMechanics()
         {
             var mechanics = await _mechanicRepo.GetAllAsync();
 
-            if(mechanics == null)
+            if (mechanics == null)
             {
                 return NotFound(new { error = "not mechanics could be found" });
             }
@@ -35,25 +39,40 @@ namespace ServiceManagement.Controllers
                 return Ok(mechanics);
             }
         }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Mechanic>> GetMechanic([FromRoute] int id)
+        /// <summary>
+        /// Returns specifif mechanic
+        /// </summary>
+        /// <param name="mechanicId">Mechanic ID</param>
+        /// <returns>Mechanic data</returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("{mechanicId}")]
+        public async Task<ActionResult<Mechanic>> GetMechanic([FromRoute] int mechanicId)
         {
-            var mechanic = await _mechanicRepo.GetByIdAsync(id);
+            var mechanic = await _mechanicRepo.GetByIdAsync(mechanicId);
             if (mechanic == null)
             {
-                return NotFound(new { error = $"mechanic with id {id} could not be found" });
+                return NotFound(new { error = $"mechanic with id {mechanicId} could not be found" });
             }
             else
             {
                 return Ok(mechanic);
             }
         }
-
+        /// <summary>
+        /// Creates mechanic
+        /// </summary>
+        /// <param name="mechanic">Mechanic data</param>
+        /// <returns>Created mechanic</returns>
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
         public async Task<ActionResult<IEnumerable<Mechanic>>> CreateMechanic([FromBody] Mechanic mechanic)
         {
-
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(mechanic);
+            }
             mechanic.LastName = "Kondrotas";
             mechanic.FirstName = "Lukas";
             mechanic.Role = UserRole.Mechanic;
@@ -63,21 +82,27 @@ namespace ServiceManagement.Controllers
             int createdId = await _mechanicRepo.CreateAsync(mechanic);
 
             return CreatedAtAction(nameof(GetMechanic), new { id = createdId });
-
         }
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteMechanic([FromRoute] int id)
+        /// <summary>
+        /// Deletes specific mechanic
+        /// </summary>
+        /// <param name="mechanicId">Mechanic ID</param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpDelete("{mechanicId}")]
+        public async Task<ActionResult> DeleteMechanic([FromRoute] int mechanicId)
         {
-            var mechanic = await _mechanicRepo.GetByIdAsync(id);
+            var mechanic = await _mechanicRepo.GetByIdAsync(mechanicId);
 
             if (mechanic == null)
             {
-                return NotFound(new { error = $"mechanic with id {id} could not be found" });
+                return NotFound(new { error = $"mechanic with id {mechanicId} could not be found" });
             }
             else
             {
                 await _mechanicRepo.DeleteAsync(mechanic);
-                return Ok();
+                return NoContent();
             }
         }
     }

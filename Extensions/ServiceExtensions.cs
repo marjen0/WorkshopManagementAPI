@@ -34,10 +34,7 @@ namespace ServiceManagement.Extensions
         }
         public static void ConfigureSwagger(this IServiceCollection services)
         {
-            services.AddSwaggerGen((options) => 
-            {
-                options.SwaggerDoc("Service Managemant API", new OpenApiInfo { Title = "Service Managemant API", Version = "1" });    
-            });
+            services.AddSwaggerGen();
         }
     }
 }

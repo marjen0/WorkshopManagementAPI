@@ -29,6 +29,7 @@ namespace ServiceManagement
             string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
                 Configuration.GetConnectionString("DefaultDBCOnnection");
 
+           
             services.AddControllers();
             services.ConfigureEntityFramework(connectionString);
             services.ConfigureRepositories();
@@ -49,10 +50,9 @@ namespace ServiceManagement
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI((c) =>
+            app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("./swagger/v1/swagger.json", "Service Managemant API");
-                c.RoutePrefix = string.Empty;
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
             app.UseRouting();
 

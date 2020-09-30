@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DataAccessLayer.Models;
 using DataAccessLayer.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ServiceManagement.DTO.Registration;
 using ServiceManagement.DTO.Service;
@@ -32,6 +33,12 @@ namespace ServiceManagement.Controllers
             _vehicleRepo = vehicleRepo ?? throw new ArgumentNullException(nameof(vehicleRepo));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
+        /// <summary>
+        /// Returns all workshops
+        /// </summary>
+        /// <returns>A list of workshops</returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<WorkshopDto>>> GetWorkshops()
         {
@@ -46,15 +53,33 @@ namespace ServiceManagement.Controllers
                 return Ok(workshopDtos);
             }
         }
-        [HttpGet("{id}")]
-        public async Task<ActionResult<WorkshopDto>> GetWorkshop([FromRoute] int id)
+        /// <summary>
+        /// Returns a specific workshop
+        /// </summary>
+        /// <param name="workshopId">ID of workshop to return</param>
+        /// <returns>Single workshop data</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet("{workshopId}")]
+        public async Task<ActionResult<WorkshopDto>> GetWorkshop([FromRoute] int workshopId)
         {
-            Workshop workshop = await _workshopRepo.GetWorkshopById(id);
+            Workshop workshop = await _workshopRepo.GetWorkshopById(workshopId);
+            if (workshop == null)
+            {
+                return NotFound(new { error = $"workshop with id {workshopId} could not be found" });
+            }
             WorkshopDto workshopDto = _mapper.Map<WorkshopDto>(workshop);
             return Ok(workshopDto);
         }
+        /// <summary>
+        /// Creates a workshop
+        /// </summary>
+        /// <param name="workshop">New workshop data</param>
+        /// <returns>Created workshop</returns>
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
-        public async Task<ActionResult> CreateWorkShop([FromBody] WorkshopCreateDto workshop)
+        public async Task<ActionResult<WorkshopDto>> CreateWorkShop([FromBody] WorkshopCreateDto workshop)
         {
             if (!ModelState.IsValid)
             {
@@ -64,21 +89,30 @@ namespace ServiceManagement.Controllers
             {
                 Workshop w = _mapper.Map<Workshop>(workshop);
                 int createdID = await _workshopRepo.CreateAsync(w);
-                return CreatedAtAction(nameof(GetWorkshops), new { ID = createdID });
+                return CreatedAtAction(nameof(GetWorkshop), new { workshopId = createdID }, workshop);
             }
 
         }
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Workshop>> UpdateWorkshop([FromRoute] int id, [FromBody] WorkshopUpdateDto updatedWorkshop)
+        /// <summary>
+        /// Updates workshop data
+        /// </summary>
+        /// <param name="id">ID of workshop to update</param>
+        /// <param name="updatedWorkshop">Updates workshop data</param>
+        /// <returns>Updates workshop data</returns>
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPut("{workshopId}")]
+        public async Task<ActionResult<Workshop>> UpdateWorkshop([FromRoute] int workshopId, [FromBody] WorkshopUpdateDto updatedWorkshop)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            Workshop workshop = await _workshopRepo.GetByIdAsync(id);
+            Workshop workshop = await _workshopRepo.GetByIdAsync(workshopId);
             if (workshop == null)
             {
-                return NotFound(new { error = $"workshop with id {id} could not be found" });
+                return NotFound(new { error = $"workshop with id {workshopId} could not be found" });
             }
             else
             {
@@ -87,44 +121,71 @@ namespace ServiceManagement.Controllers
                 return Ok(workshop);
             }
         }
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteWorkshop([FromRoute] int id)
+        /// <summary>
+        /// Deletes workshop
+        /// </summary>
+        /// <param name="workshopId">ID of workshop to delete</param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpDelete("{workshopId}")]
+        public async Task<ActionResult> DeleteWorkshop([FromRoute] int workshopId)
         {
-            Workshop workshop = await _workshopRepo.GetByIdAsync(id);
+            Workshop workshop = await _workshopRepo.GetByIdAsync(workshopId);
             if (workshop == null)
             {
-                return NotFound(new { error = $"workshop with id {id} could not be found" });
+                return NotFound(new { error = $"workshop with id {workshopId} could not be found" });
             }
             else
             {
                 await _workshopRepo.DeleteAsync(workshop);
-                return Ok();
+                return NoContent();
             }
         }
-        [HttpPost("{id}/services")]
-        public async Task<ActionResult> CreateWorkshopService([FromRoute] int id, [FromBody] ServiceCreateDto serviceDto)
+        /// <summary>
+        /// Creates a service that workshop provides
+        /// </summary>
+        /// <param name="workshopId">ID of workshop</param>
+        /// <param name="serviceDto">Service data</param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [HttpPost("{workshopId}/services")]
+        public async Task<ActionResult<Service>> CreateWorkshopService([FromRoute] int workshopId, [FromBody] ServiceCreateDto serviceDto)
         {
-            Workshop workshop = await _workshopRepo.GetByIdAsync(id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(serviceDto);
+            }
+            Workshop workshop = await _workshopRepo.GetByIdAsync(workshopId);
             if (workshop == null)
             {
-                return NotFound(new { error = $"workshop with id {id} could not be found" });
+                return NotFound(new { error = $"workshop with id {workshopId} could not be found" });
             }
             else
             {
-                serviceDto.WorkshopID = id;
+                serviceDto.WorkshopID = workshopId;
                 Service service = _mapper.Map<Service>(serviceDto);
-                await _serviceRepo.CreateAsync(service);
+                int createdServiceId = await _serviceRepo.CreateAsync(service);
                 await _workshopRepo.UpdateAsync(workshop);
-                return Ok();
+                return CreatedAtAction(nameof(GetSingleWorkshopService), new { workshopId = workshopId, serviceId = createdServiceId }, serviceDto);
             }
         }
-        [HttpGet("{id}/services")]
-        public async Task<ActionResult<IEnumerable<ServiceDto>>> GetWorkshopServices([FromRoute] int id)
+        /// <summary>
+        /// Returns services of workshop
+        /// </summary>
+        /// <param name="workshopId">ID of workshop</param>
+        /// <returns>A list of services provided by workshop</returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("{workshopId}/services")]
+        public async Task<ActionResult<IEnumerable<ServiceDto>>> GetWorkshopServices([FromRoute] int workshopId)
         {
-            Workshop workshop = await _workshopRepo.GetWorkshopById(id);
+            Workshop workshop = await _workshopRepo.GetWorkshopById(workshopId);
             if (workshop == null)
             {
-                return NotFound(new { error = $"workshop with id {id} could not be found" });
+                return NotFound(new { error = $"workshop with id {workshopId} could not be found" });
             }
             else
             {
@@ -132,7 +193,14 @@ namespace ServiceManagement.Controllers
                 return Ok(serviceDtos);
             }
         }
-
+        /// <summary>
+        /// Return a single service of workshop
+        /// </summary>
+        /// <param name="workshopId">ID of workshop</param>
+        /// <param name="serviceId">ID of service</param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("{workshopId}/services/{serviceId}")]
         public async Task<ActionResult<ServiceDto>> GetSingleWorkshopService([FromRoute] int workshopId, [FromRoute] int serviceId)
         {
@@ -147,10 +215,23 @@ namespace ServiceManagement.Controllers
                 return Ok(serviceDto);
             }
         }
-
+        /// <summary>
+        /// Updates a service of workshop
+        /// </summary>
+        /// <param name="workshopId">ID of workshop</param>
+        /// <param name="serviceId">ID of service</param>
+        /// <param name="serviceUpdateDto">Updates service data</param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPut("{workshopId}/services/{serviceId}")]
         public async Task<ActionResult> UpdateWorkshopService([FromRoute] int workshopId, [FromRoute] int serviceId, [FromBody] ServiceUpdateDto serviceUpdateDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(serviceUpdateDto);
+            }
             Service service = await _serviceRepo.GetWorkshopSingleService(workshopId, serviceId);
             if (service == null)
             {
@@ -161,10 +242,17 @@ namespace ServiceManagement.Controllers
                 service = _mapper.Map<Service>(serviceUpdateDto);
                 service.WorkshopID = workshopId;
                 await _serviceRepo.UpdateAsync(service);
-                return Ok();
+                return NoContent();
             }
         }
-
+        /// <summary>
+        /// Deletes a workshops service
+        /// </summary>
+        /// <param name="workshopId">ID of service to delete</param>
+        /// <param name="serviceId">ID of Service</param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpDelete("{workshopId}/services/{serviceId}")]
         public async Task<ActionResult> DeleteSingleWorkshopService([FromRoute] int workshopId, [FromRoute] int serviceId)
         {
@@ -176,10 +264,18 @@ namespace ServiceManagement.Controllers
             else
             {
                 await _serviceRepo.DeleteAsync(service);
-                return Ok();
+                return NoContent();
             }
         }
-
+        /// <summary>
+        /// Create a registration to workshop
+        /// </summary>
+        /// <param name="workshopId">ID workshop to register</param>
+        /// <param name="registrationCreateDto">Registration data</param>
+        /// <returns>Crated registration data</returns>
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost("{workshopId}/registrations")]
         public async Task<ActionResult> CreateRegistration(int workshopId, [FromBody] RegistrationCreateDto registrationCreateDto)
         {
@@ -198,21 +294,36 @@ namespace ServiceManagement.Controllers
             Registration registration = _mapper.Map<Registration>(registrationCreateDto);
             registration.VehicleID = createdVehicleId;
             registration.DateRegistered = DateTime.Now;
-            await _registrationRepo.CreateAsync(registration);
-            return Ok();
-            
+            int createdRegistrationId = await _registrationRepo.CreateAsync(registration);
+            return CreatedAtAction(nameof(GetWorkshopSingleRegistration), new { workshopId = workshopId, registrationId = createdRegistrationId }, registrationCreateDto);
+
         }
+        /// <summary>
+        /// Returns all registrations of specific workshop
+        /// </summary>
+        /// <param name="workshopId">ID of workshop</param>
+        /// <returns>A list of registrations</returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("{workshopId}/registrations")]
         public async Task<ActionResult<IEnumerable<RegistrationDto>>> GetWorkshopRegistrations([FromRoute] int workshopId)
         {
             Workshop workshop = await _workshopRepo.GetWorkshopById(workshopId);
             if (workshop == null)
             {
-                return NotFound(new { error = $"workshop with id {workshopId} could not be found"});
+                return NotFound(new { error = $"workshop with id {workshopId} could not be found" });
             }
             IEnumerable<RegistrationDto> registrationDto = workshop.Registrations.Select(r => _mapper.Map<RegistrationDto>(r));
             return Ok(registrationDto);
         }
+        /// <summary>
+        /// Returns a specific registration of specific workshop
+        /// </summary>
+        /// <param name="workshopId">ID of workshop</param>
+        /// <param name="registrationId">ID of registration</param>
+        /// <returns>Registration data</returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("{workshopId}/registrations/{registrationId}")]
         public async Task<ActionResult<RegistrationDto>> GetWorkshopSingleRegistration([FromRoute] int workshopId, [FromRoute] int registrationId)
         {
@@ -224,6 +335,14 @@ namespace ServiceManagement.Controllers
             RegistrationDto registrationDto = _mapper.Map<RegistrationDto>(registration);
             return Ok(registrationDto);
         }
+        /// <summary>
+        /// Deletes a specific registration of specific workshop
+        /// </summary>
+        /// <param name="workshopId">ID of workshop</param>
+        /// <param name="registrationId">ID of registration</param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpDelete("{workshopId}/registrations/{registrationId}")]
         public async Task<ActionResult> DeleteSingleRegistration([FromRoute] int workshopId, [FromRoute] int registrationId)
         {
@@ -233,8 +352,17 @@ namespace ServiceManagement.Controllers
                 return NotFound(new { error = $"registration with id {registrationId} could not be found in workshop with id {workshopId}" });
             }
             await _registrationRepo.DeleteAsync(registration);
-            return Ok();
+            return NoContent();
         }
+        /// <summary>
+        /// Updates specific registration data in specific workshop
+        /// </summary>
+        /// <param name="workshopId">ID of workshop</param>
+        /// <param name="registrationId">ID of registration</param>
+        /// <param name="registrationUpdateDto">Updated registration data</param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpPut("{workshopId}/registrations/{registrationId}")]
         public async Task<ActionResult> UpdateRegistration([FromRoute] int workshopId, [FromRoute] int registrationId, [FromBody] RegistrationUpdateDto registrationUpdateDto)
         {
@@ -245,7 +373,7 @@ namespace ServiceManagement.Controllers
             }
             registration.DateOfRepair = registrationUpdateDto.DateOfRepair;
             await _registrationRepo.UpdateAsync(registration);
-            return Ok();
+            return NoContent();
         }
     }
 }
