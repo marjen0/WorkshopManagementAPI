@@ -30,7 +30,12 @@ namespace ServiceManagement.Profiles
                 dest.Name = source.Name;
                 dest.Price = source.Price;
                 dest.RepairTimeInHours = source.RepairTimeInHours;
-                dest.ID = source.ID;
+            });
+            CreateMap<ServiceUpdateDto, Service>().AfterMap((source, dest) =>
+            {
+                dest.Name = source.Name;
+                dest.Price = source.Price;
+                dest.RepairTimeInHours = source.RepairTimeInHours;
             });
         }
     }

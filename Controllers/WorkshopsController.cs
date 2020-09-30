@@ -66,12 +66,12 @@ namespace ServiceManagement.Controllers
                 int createdID = await _workshopRepo.CreateAsync(w);
                 return CreatedAtAction(nameof(GetWorkshops), new { ID = createdID });
             }
-            
+
         }
         [HttpPut("{id}")]
         public async Task<ActionResult<Workshop>> UpdateWorkshop([FromRoute] int id, [FromBody] WorkshopUpdateDto updatedWorkshop)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -145,6 +145,23 @@ namespace ServiceManagement.Controllers
             {
                 ServiceDto serviceDto = _mapper.Map<ServiceDto>(service);
                 return Ok(serviceDto);
+            }
+        }
+
+        [HttpPut("{workshopId}/services/{serviceId}")]
+        public async Task<ActionResult> UpdateWorkshopService([FromRoute] int workshopId, [FromRoute] int serviceId, [FromBody] ServiceUpdateDto serviceUpdateDto)
+        {
+            Service service = await _serviceRepo.GetWorkshopSingleService(workshopId, serviceId);
+            if (service == null)
+            {
+                return NotFound(new { error = $"service with id {serviceId} could not be found in workshop with id {workshopId}" });
+            }
+            else
+            {
+                service = _mapper.Map<Service>(serviceUpdateDto);
+                service.WorkshopID = workshopId;
+                await _serviceRepo.UpdateAsync(service);
+                return Ok();
             }
         }
 
