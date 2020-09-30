@@ -132,6 +132,22 @@ namespace ServiceManagement.Controllers
                 return Ok(serviceDtos);
             }
         }
+
+        [HttpGet("{workshopId}/services/{serviceId}")]
+        public async Task<ActionResult<ServiceDto>> GetSingleWorkshopService([FromRoute] int workshopId, [FromRoute] int serviceId)
+        {
+            Service service = await _serviceRepo.GetWorkshopSingleService(workshopId, serviceId);
+            if (service == null)
+            {
+                return NotFound(new { error = $"service with id {serviceId} could not be found in workshop with id {workshopId}" });
+            }
+            else
+            {
+                ServiceDto serviceDto = _mapper.Map<ServiceDto>(service);
+                return Ok(serviceDto);
+            }
+        }
+
         [HttpPost("{workshopId}/registrations")]
         public async Task<ActionResult> CreateRegistration(int workshopId, [FromBody] RegistrationCreateDto registrationCreateDto)
         {
