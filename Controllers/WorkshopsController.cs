@@ -15,8 +15,9 @@ using ServiceManagement.DTO.Workshop;
 
 namespace ServiceManagement.Controllers
 {
-    [ApiController]
+    
     [Route("api/[controller]")]
+    [ApiController]
     public class WorkshopsController : ControllerBase
     {
         private readonly IWorkshopRepository _workshopRepo;
