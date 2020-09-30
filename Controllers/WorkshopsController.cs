@@ -165,6 +165,21 @@ namespace ServiceManagement.Controllers
             }
         }
 
+        [HttpDelete("{workshopId}/services/{serviceId}")]
+        public async Task<ActionResult> DeleteSingleWorkshopService([FromRoute] int workshopId, [FromRoute] int serviceId)
+        {
+            Service service = await _serviceRepo.GetWorkshopSingleService(workshopId, serviceId);
+            if (service == null)
+            {
+                return NotFound(new { error = $"service with id {serviceId} could not be found in workshop with id {workshopId}" });
+            }
+            else
+            {
+                await _serviceRepo.DeleteAsync(service);
+                return Ok();
+            }
+        }
+
         [HttpPost("{workshopId}/registrations")]
         public async Task<ActionResult> CreateRegistration(int workshopId, [FromBody] RegistrationCreateDto registrationCreateDto)
         {
