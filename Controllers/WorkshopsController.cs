@@ -15,7 +15,7 @@ using ServiceManagement.DTO.Workshop;
 
 namespace ServiceManagement.Controllers
 {
-    
+
     [Route("api/[controller]")]
     [ApiController]
     public class WorkshopsController : ControllerBase
@@ -44,9 +44,9 @@ namespace ServiceManagement.Controllers
         public async Task<ActionResult<IEnumerable<WorkshopDto>>> GetWorkshops()
         {
             var workshops = (await _workshopRepo.GetAllAsync()).ToList();
-            if (workshops.Count == 0)
+            if (workshops == null || workshops.Count == 0)
             {
-                return NotFound();
+                return NotFound(new { error = "no workshops could be found"});
             }
             else
             {

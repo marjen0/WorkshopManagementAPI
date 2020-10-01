@@ -35,6 +35,7 @@ namespace ServiceManagement
             services.ConfigureRepositories();
             services.ConfigureAutoMapper();
             services.ConfigureSwagger();
+            services.ConfigureCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,7 +49,7 @@ namespace ServiceManagement
             {
                 app.UseHttpsRedirection();
             }
-
+            app.UseCors("AllowOrigins");
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

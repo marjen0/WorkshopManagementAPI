@@ -28,11 +28,11 @@ namespace ServiceManagement.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Mechanic>>> GetAllMechanics()
         {
-            var mechanics = await _mechanicRepo.GetAllAsync();
+            var mechanics = (await _mechanicRepo.GetAllAsync()).ToList();
 
-            if (mechanics == null)
+            if (mechanics == null || mechanics.Count == 0)
             {
-                return NotFound(new { error = "not mechanics could be found" });
+                return NotFound(new { error = "no mechanics could be found" });
             }
             else
             {
@@ -81,7 +81,7 @@ namespace ServiceManagement.Controllers
 
             int createdId = await _mechanicRepo.CreateAsync(mechanic);
 
-            return CreatedAtAction(nameof(GetMechanic), new { id = createdId });
+            return CreatedAtAction(nameof(GetMechanic), new { mechanicId = createdId }, mechanic);
         }
         /// <summary>
         /// Deletes specific mechanic
