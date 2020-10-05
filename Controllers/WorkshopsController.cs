@@ -117,7 +117,11 @@ namespace ServiceManagement.Controllers
             }
             else
             {
-                workshop = _mapper.Map<Workshop>(updatedWorkshop);
+                workshop.BuildingNumber = updatedWorkshop.BuildingNumber;
+                workshop.City = updatedWorkshop.City;
+                workshop.Name = updatedWorkshop.Name;
+                workshop.PostalCode = updatedWorkshop.PostalCode;
+                workshop.Street = updatedWorkshop.Street;
                 await _workshopRepo.UpdateAsync(workshop);
                 return Ok(workshop);
             }
@@ -240,8 +244,12 @@ namespace ServiceManagement.Controllers
             }
             else
             {
-                service = _mapper.Map<Service>(serviceUpdateDto);
+                //service = _mapper.Map<Service>(serviceUpdateDto);
                 service.WorkshopID = workshopId;
+                service.Name = serviceUpdateDto.Name;
+                service.Price = serviceUpdateDto.Price;
+                service.RepairTimeInHours = service.RepairTimeInHours;
+               
                 await _serviceRepo.UpdateAsync(service);
                 return NoContent();
             }
@@ -373,6 +381,7 @@ namespace ServiceManagement.Controllers
                 return NotFound(new { error = $"registration with id {registrationId} could not be found in workshop with id {workshopId}" });
             }
             registration.DateOfRepair = registrationUpdateDto.DateOfRepair;
+            
             await _registrationRepo.UpdateAsync(registration);
             return NoContent();
         }
