@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DataAccessLayer.Models;
+using DataAccessLayer.Entities;
 using ServiceManagement.DTO.Vehicle;
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,7 @@ namespace ServiceManagement.Profiles
                 dest.ManufactureDate = source.ManufactureDate;
                 dest.Model = source.Model;
                 dest.RegistrationNumber = source.RegistrationNumber;
-                dest.ID = source.ID;
+                dest.ID = source.Id;
             });
         }
     }

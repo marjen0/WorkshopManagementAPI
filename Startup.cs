@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,14 +29,25 @@ namespace ServiceManagement
         {
             string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
                 Configuration.GetConnectionString("DefaultDBCOnnection");
+            string jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? Configuration.GetSection("Jwt")["Key"];
 
-           
-            services.AddControllers();
             services.ConfigureEntityFramework(connectionString);
+            // configure strongly typed settings objects
+            //var appSettingSection = Configuration.GetSection("AppSettings");
+            //services.Configure<AppSettings>(appSettingSection);
+
+            services.AddControllers();
+            
             services.ConfigureRepositories();
             services.ConfigureAutoMapper();
             services.ConfigureSwagger();
             services.ConfigureCors();
+            services.ConfigureServices();
+
+            var key = Encoding.ASCII.GetBytes(jwtSecret);
+            services.ConfigureIdentity();
+            services.ConfigureAuthentication(key);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,7 +68,7 @@ namespace ServiceManagement
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Service Management API V1");
             });
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

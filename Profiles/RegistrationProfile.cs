@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DataAccessLayer.Models;
+using DataAccessLayer.Entities;
 using ServiceManagement.DTO.Registration;
 using System;
 using System.Collections.Generic;
@@ -19,12 +19,12 @@ namespace ServiceManagement.Profiles
             });
             CreateMap<Registration, RegistrationDto>().AfterMap((source, dest) =>
             {
-                dest.ID = source.ID;
+                dest.ID = source.Id;
                 dest.DateRegistered = source.DateRegistered;
                 dest.DateOfRepair = source.DateOfRepair;
                 dest.Vehicle.EngineCapacity = source.Vehicle.EngineCapacity;
                 dest.Vehicle.FuelType = source.Vehicle.FuelType;
-                dest.Vehicle.ID = source.Vehicle.ID;
+                dest.Vehicle.ID = source.Vehicle.Id;
                 dest.Vehicle.Make = source.Vehicle.Make;
                 dest.Vehicle.ManufactureDate = source.Vehicle.ManufactureDate;
                 dest.Vehicle.Model = source.Vehicle.Model;

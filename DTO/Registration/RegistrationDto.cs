@@ -1,5 +1,5 @@
 ﻿
-using DataAccessLayer.Models;
+using DataAccessLayer.Entities;
 using ServiceManagement.DTO.Vehicle;
 using ServiceManagement.DTO.Workshop;
 using System;

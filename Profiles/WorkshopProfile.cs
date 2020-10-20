@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DataAccessLayer.Models;
+using DataAccessLayer.Entities;
 using ServiceManagement.DTO.Workshop;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace ServiceManagement.Profiles
         {
             CreateMap<Workshop, WorkshopDto>().AfterMap((source, dest) =>
             {
-                dest.ID = source.ID;
+                dest.ID = source.Id;
                 dest.Name = source.Name;
                 dest.City = source.City;
                 dest.BuildingNumber = source.BuildingNumber;

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DataAccessLayer.Models;
+using DataAccessLayer.Entities;
 using ServiceManagement.DTO.Service;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace ServiceManagement.Profiles
         {
             CreateMap<Service, ServiceDto>().AfterMap((source, dest) =>
             {
-                dest.ID = source.ID;
+                dest.ID = source.Id;
                 dest.Name = source.Name;
                 dest.Price = source.Price;
                 dest.RepairTimeInHours = source.RepairTimeInHours;

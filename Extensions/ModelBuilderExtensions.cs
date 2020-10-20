@@ -1,4 +1,4 @@
-﻿using DataAccessLayer.Models;
+﻿using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,8 +12,8 @@ namespace ServiceManagement.Extensions
         public static void SeedDatabse(this ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<OfferedService>().HasData(
-                new OfferedService { ID = 1, Name = "Padangu keitimas", Price =50,RepairTimeInHours=2},
-                new OfferedService { ID=2, Name="Stabdziu kaladeliu keitimas",Price=20,RepairTimeInHours=1}
+                new OfferedService { Id = 1, Name = "Padangu keitimas", Price =50,RepairTimeInHours=2},
+                new OfferedService { Id=2, Name="Stabdziu kaladeliu keitimas",Price=20,RepairTimeInHours=1}
                 
                 ); 
             /*modelBuilder.Entity<Workshop>().HasData(new Workshop
