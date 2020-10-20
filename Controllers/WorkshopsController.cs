@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ServiceManagement.DTO.Registration;
@@ -38,15 +39,15 @@ namespace ServiceManagement.Controllers
         /// Returns all workshops
         /// </summary>
         /// <returns>A list of workshops</returns>
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet]
         public async Task<ActionResult<IEnumerable<WorkshopDto>>> GetWorkshops()
         {
             var workshops = (await _workshopRepo.GetAllAsync()).ToList();
             if (workshops == null || workshops.Count == 0)
             {
-                return NotFound(new { error = "no workshops could be found"});
+                return NotFound(new { error = "no workshops could be found" });
             }
             else
             {
@@ -59,9 +60,9 @@ namespace ServiceManagement.Controllers
         /// </summary>
         /// <param name="workshopId">ID of workshop to return</param>
         /// <returns>Single workshop data</returns>
+        [HttpGet("{workshopId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("{workshopId}")]
         public async Task<ActionResult<WorkshopDto>> GetWorkshop([FromRoute] int workshopId)
         {
             Workshop workshop = await _workshopRepo.GetWorkshopById(workshopId);
@@ -77,9 +78,12 @@ namespace ServiceManagement.Controllers
         /// </summary>
         /// <param name="workshop">New workshop data</param>
         /// <returns>Created workshop</returns>
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(WorkshopDto))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<WorkshopDto>> CreateWorkShop([FromBody] WorkshopCreateDto workshop)
         {
             if (!ModelState.IsValid)
@@ -100,10 +104,13 @@ namespace ServiceManagement.Controllers
         /// <param name="id">ID of workshop to update</param>
         /// <param name="updatedWorkshop">Updates workshop data</param>
         /// <returns>Updates workshop data</returns>
+        [HttpPut("{workshopId}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPut("{workshopId}")]
         public async Task<ActionResult<Workshop>> UpdateWorkshop([FromRoute] int workshopId, [FromBody] WorkshopUpdateDto updatedWorkshop)
         {
             if (!ModelState.IsValid)
@@ -131,9 +138,12 @@ namespace ServiceManagement.Controllers
         /// </summary>
         /// <param name="workshopId">ID of workshop to delete</param>
         /// <returns></returns>
+        [HttpDelete("{workshopId}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [HttpDelete("{workshopId}")]
         public async Task<ActionResult> DeleteWorkshop([FromRoute] int workshopId)
         {
             Workshop workshop = await _workshopRepo.GetByIdAsync(workshopId);
@@ -153,10 +163,13 @@ namespace ServiceManagement.Controllers
         /// <param name="workshopId">ID of workshop</param>
         /// <param name="serviceDto">Service data</param>
         /// <returns></returns>
+        [HttpPost("{workshopId}/services")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [HttpPost("{workshopId}/services")]
         public async Task<ActionResult<Service>> CreateWorkshopService([FromRoute] int workshopId, [FromBody] ServiceCreateDto serviceDto)
         {
             if (!ModelState.IsValid)
@@ -182,9 +195,9 @@ namespace ServiceManagement.Controllers
         /// </summary>
         /// <param name="workshopId">ID of workshop</param>
         /// <returns>A list of services provided by workshop</returns>
+        [HttpGet("{workshopId}/services")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("{workshopId}/services")]
         public async Task<ActionResult<IEnumerable<ServiceDto>>> GetWorkshopServices([FromRoute] int workshopId)
         {
             Workshop workshop = await _workshopRepo.GetWorkshopById(workshopId);
@@ -204,9 +217,9 @@ namespace ServiceManagement.Controllers
         /// <param name="workshopId">ID of workshop</param>
         /// <param name="serviceId">ID of service</param>
         /// <returns></returns>
+        [HttpGet("{workshopId}/services/{serviceId}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("{workshopId}/services/{serviceId}")]
         public async Task<ActionResult<ServiceDto>> GetSingleWorkshopService([FromRoute] int workshopId, [FromRoute] int serviceId)
         {
             Service service = await _serviceRepo.GetWorkshopSingleService(workshopId, serviceId);
@@ -227,10 +240,13 @@ namespace ServiceManagement.Controllers
         /// <param name="serviceId">ID of service</param>
         /// <param name="serviceUpdateDto">Updates service data</param>
         /// <returns></returns>
+        [HttpPut("{workshopId}/services/{serviceId}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [HttpPut("{workshopId}/services/{serviceId}")]
         public async Task<ActionResult> UpdateWorkshopService([FromRoute] int workshopId, [FromRoute] int serviceId, [FromBody] ServiceUpdateDto serviceUpdateDto)
         {
             if (!ModelState.IsValid)
@@ -249,7 +265,7 @@ namespace ServiceManagement.Controllers
                 service.Name = serviceUpdateDto.Name;
                 service.Price = serviceUpdateDto.Price;
                 service.RepairTimeInHours = service.RepairTimeInHours;
-               
+
                 await _serviceRepo.UpdateAsync(service);
                 return NoContent();
             }
@@ -260,9 +276,12 @@ namespace ServiceManagement.Controllers
         /// <param name="workshopId">ID of service to delete</param>
         /// <param name="serviceId">ID of Service</param>
         /// <returns></returns>
+        [HttpDelete("{workshopId}/services/{serviceId}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [HttpDelete("{workshopId}/services/{serviceId}")]
         public async Task<ActionResult> DeleteSingleWorkshopService([FromRoute] int workshopId, [FromRoute] int serviceId)
         {
             Service service = await _serviceRepo.GetWorkshopSingleService(workshopId, serviceId);
@@ -282,10 +301,12 @@ namespace ServiceManagement.Controllers
         /// <param name="workshopId">ID workshop to register</param>
         /// <param name="registrationCreateDto">Registration data</param>
         /// <returns>Crated registration data</returns>
+        [HttpPost("{workshopId}/registrations")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [HttpPost("{workshopId}/registrations")]
         public async Task<ActionResult> CreateRegistration(int workshopId, [FromBody] RegistrationCreateDto registrationCreateDto)
         {
             if (!ModelState.IsValid)
@@ -312,9 +333,12 @@ namespace ServiceManagement.Controllers
         /// </summary>
         /// <param name="workshopId">ID of workshop</param>
         /// <returns>A list of registrations</returns>
+        [HttpGet("{workshopId}/registrations")]
+        [Authorize(Roles = "Admin, Mechanic")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("{workshopId}/registrations")]
         public async Task<ActionResult<IEnumerable<RegistrationDto>>> GetWorkshopRegistrations([FromRoute] int workshopId)
         {
             Workshop workshop = await _workshopRepo.GetWorkshopById(workshopId);
@@ -331,9 +355,12 @@ namespace ServiceManagement.Controllers
         /// <param name="workshopId">ID of workshop</param>
         /// <param name="registrationId">ID of registration</param>
         /// <returns>Registration data</returns>
+        [HttpGet("{workshopId}/registrations/{registrationId}")]
+        [Authorize(Roles = "Admin, Mechanic")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("{workshopId}/registrations/{registrationId}")]
         public async Task<ActionResult<RegistrationDto>> GetWorkshopSingleRegistration([FromRoute] int workshopId, [FromRoute] int registrationId)
         {
             Registration registration = await _registrationRepo.GetSingleRegistration(workshopId, registrationId);
@@ -350,9 +377,12 @@ namespace ServiceManagement.Controllers
         /// <param name="workshopId">ID of workshop</param>
         /// <param name="registrationId">ID of registration</param>
         /// <returns></returns>
+        [HttpDelete("{workshopId}/registrations/{registrationId}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [HttpDelete("{workshopId}/registrations/{registrationId}")]
         public async Task<ActionResult> DeleteSingleRegistration([FromRoute] int workshopId, [FromRoute] int registrationId)
         {
             Registration registration = await _registrationRepo.GetSingleRegistration(workshopId, registrationId);
@@ -370,9 +400,11 @@ namespace ServiceManagement.Controllers
         /// <param name="registrationId">ID of registration</param>
         /// <param name="registrationUpdateDto">Updated registration data</param>
         /// <returns></returns>
+        [HttpDelete("{workshopId}/registrations/{registrationId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [HttpPut("{workshopId}/registrations/{registrationId}")]
         public async Task<ActionResult> UpdateRegistration([FromRoute] int workshopId, [FromRoute] int registrationId, [FromBody] RegistrationUpdateDto registrationUpdateDto)
         {
             Registration registration = await _registrationRepo.GetSingleRegistration(workshopId, registrationId);

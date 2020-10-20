@@ -21,6 +21,9 @@ namespace ServiceManagement.Controllers
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()

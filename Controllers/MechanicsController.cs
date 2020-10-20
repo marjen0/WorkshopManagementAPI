@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,9 +24,12 @@ namespace ServiceManagement.Controllers
         /// Returns all mechanics 
         /// </summary>
         /// <returns>A list of mechanics</returns>
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        
         public async Task<ActionResult<IEnumerable<Mechanic>>> GetAllMechanics()
         {
             var mechanics = (await _mechanicRepo.GetAllAsync()).ToList();
@@ -44,9 +48,11 @@ namespace ServiceManagement.Controllers
         /// </summary>
         /// <param name="mechanicId">Mechanic ID</param>
         /// <returns>Mechanic data</returns>
+        [HttpGet("{mechanicId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("{mechanicId}")]
         public async Task<ActionResult<Mechanic>> GetMechanic([FromRoute] int mechanicId)
         {
             var mechanic = await _mechanicRepo.GetByIdAsync(mechanicId);
@@ -64,9 +70,12 @@ namespace ServiceManagement.Controllers
         /// </summary>
         /// <param name="mechanic">Mechanic data</param>
         /// <returns>Created mechanic</returns>
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [HttpPost]
         public async Task<ActionResult<IEnumerable<Mechanic>>> CreateMechanic([FromBody] Mechanic mechanic)
         {
             if (!ModelState.IsValid)
@@ -88,9 +97,12 @@ namespace ServiceManagement.Controllers
         /// </summary>
         /// <param name="mechanicId">Mechanic ID</param>
         /// <returns></returns>
+        [HttpDelete("{mechanicId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [HttpDelete("{mechanicId}")]
         public async Task<ActionResult> DeleteMechanic([FromRoute] int mechanicId)
         {
             var mechanic = await _mechanicRepo.GetByIdAsync(mechanicId);
