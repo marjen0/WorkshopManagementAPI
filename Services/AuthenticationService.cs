@@ -34,6 +34,7 @@ namespace ServiceManagement.Services
         public async Task<UserDto> CreateUserAsync(UserRegisterDto userDto, UserRole role)
         {
             User user = await _userRepository.GetByUsernameAsync(userDto.Username);
+           
             if (user != null)
                 throw new ArgumentException("user already exists");
 
@@ -41,7 +42,7 @@ namespace ServiceManagement.Services
             User newUser = _mapper.Map<User>(userDto);
             newUser.Role = role;
             newUser.PasswordHash = _userManager.PasswordHasher.HashPassword(newUser, userDto.Password1);
-
+           
             await _userRepository.CreateAsync(newUser);
 
             return _mapper.Map<UserDto>(newUser);
@@ -92,6 +93,11 @@ namespace ServiceManagement.Services
             if (result.ToString() == "Success")
                 return user;
             return null;
+        }
+
+        public Task<string> GenerateRefreshToken()
+        {
+            throw new NotImplementedException();
         }
     }
 }

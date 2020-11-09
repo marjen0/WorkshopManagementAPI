@@ -11,5 +11,6 @@ namespace ServiceManagement.Services
     {
         Task<UserDto> CreateUserAsync(UserRegisterDto userDto, UserRole role);
         Task<string> AuthenticateUserAsync(UserLoginDto userDto);
+        Task<string> GenerateRefreshToken();
     }
 }

@@ -79,7 +79,7 @@ namespace ServiceManagement.Controllers
         /// <param name="workshop">New workshop data</param>
         /// <returns>Created workshop</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(WorkshopDto))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -105,7 +105,7 @@ namespace ServiceManagement.Controllers
         /// <param name="updatedWorkshop">Updates workshop data</param>
         /// <returns>Updates workshop data</returns>
         [HttpPut("{workshopId}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -139,7 +139,7 @@ namespace ServiceManagement.Controllers
         /// <param name="workshopId">ID of workshop to delete</param>
         /// <returns></returns>
         [HttpDelete("{workshopId}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -164,7 +164,7 @@ namespace ServiceManagement.Controllers
         /// <param name="serviceDto">Service data</param>
         /// <returns></returns>
         [HttpPost("{workshopId}/services")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -241,7 +241,7 @@ namespace ServiceManagement.Controllers
         /// <param name="serviceUpdateDto">Updates service data</param>
         /// <returns></returns>
         [HttpPut("{workshopId}/services/{serviceId}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -277,7 +277,7 @@ namespace ServiceManagement.Controllers
         /// <param name="serviceId">ID of Service</param>
         /// <returns></returns>
         [HttpDelete("{workshopId}/services/{serviceId}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -302,7 +302,7 @@ namespace ServiceManagement.Controllers
         /// <param name="registrationCreateDto">Registration data</param>
         /// <returns>Crated registration data</returns>
         [HttpPost("{workshopId}/registrations")]
-        [Authorize]
+        //[Authorize]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -334,7 +334,7 @@ namespace ServiceManagement.Controllers
         /// <param name="workshopId">ID of workshop</param>
         /// <returns>A list of registrations</returns>
         [HttpGet("{workshopId}/registrations")]
-        [Authorize(Roles = "Admin, Mechanic")]
+        //[Authorize(Roles = "Admin, Mechanic")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -356,7 +356,7 @@ namespace ServiceManagement.Controllers
         /// <param name="registrationId">ID of registration</param>
         /// <returns>Registration data</returns>
         [HttpGet("{workshopId}/registrations/{registrationId}")]
-        [Authorize(Roles = "Admin, Mechanic")]
+        //[Authorize(Roles = "Admin, Mechanic")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -378,7 +378,7 @@ namespace ServiceManagement.Controllers
         /// <param name="registrationId">ID of registration</param>
         /// <returns></returns>
         [HttpDelete("{workshopId}/registrations/{registrationId}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -400,8 +400,8 @@ namespace ServiceManagement.Controllers
         /// <param name="registrationId">ID of registration</param>
         /// <param name="registrationUpdateDto">Updated registration data</param>
         /// <returns></returns>
-        [HttpDelete("{workshopId}/registrations/{registrationId}")]
-        [Authorize]
+        [HttpPut("{workshopId}/registrations/{registrationId}")]
+        //[Authorize]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
