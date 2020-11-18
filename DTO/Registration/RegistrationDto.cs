@@ -14,6 +14,7 @@ namespace ServiceManagement.DTO.Registration
         public int ID { get; set; }
         public DateTime DateRegistered { get; set; }
         public DateTime DateOfRepair { get; set; }
+        public int UserId { get; set; }
         public VehicleDto Vehicle { get; set; }
     }
 }

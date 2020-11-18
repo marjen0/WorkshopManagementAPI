@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ServiceManagement.DTO;
 using ServiceManagement.DTO.User;
 using ServiceManagement.Services;
 
@@ -15,9 +18,11 @@ namespace ServiceManagement.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
+        private readonly UserManager<User> _userManager;
         private readonly IAuthService _authService;
-        public AuthenticationController(IAuthService authService)
+        public AuthenticationController(IAuthService authService, UserManager<User> userManager)
         {
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(authService));
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
         [HttpPost("signup")]
@@ -38,9 +43,9 @@ namespace ServiceManagement.Controllers
             }
         }
         [HttpPost("signin")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> SignIn(UserLoginDto userLoginDto)
+        public async Task<ActionResult<LoginResponse>> SignIn(UserLoginDto userLoginDto)
         {
             if (!ModelState.IsValid)
             {
@@ -48,8 +53,8 @@ namespace ServiceManagement.Controllers
             }
             try
             {
-                string token = await _authService.AuthenticateUserAsync(userLoginDto);
-                return Ok(new { token });
+                LoginResponse response = await _authService.AuthenticateUserAsync(userLoginDto);
+                return Ok(response);
             }
             catch (Exception e)
             {
@@ -76,5 +81,7 @@ namespace ServiceManagement.Controllers
             };
             Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
         }
+
+      
     }
 }

@@ -30,6 +30,7 @@ namespace ServiceManagement.Profiles
                 dest.Vehicle.Model = source.Vehicle.Model;
                 dest.Vehicle.RegistrationNumber = source.Vehicle.RegistrationNumber;
                 dest.Vehicle.EngineCapacity = source.Vehicle.EngineCapacity;
+                dest.UserId = source.UserID;
             });
             CreateMap<RegistrationUpdateDto, Registration>().AfterMap((source, dest) =>
             {

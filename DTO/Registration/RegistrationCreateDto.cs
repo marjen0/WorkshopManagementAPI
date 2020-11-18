@@ -12,6 +12,7 @@ namespace ServiceManagement.DTO.Registration
         public DateTime DateOfRepair { get; set; }
         [Required]
         public int WorkshopID { get; set; }
+        [Required]
         public VehicleCreateDto Vehicle { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using DataAccessLayer.Entities;
 using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ServiceManagement.DTO.Registration;
 using ServiceManagement.DTO.Service;
@@ -21,19 +22,21 @@ namespace ServiceManagement.Controllers
     [ApiController]
     public class WorkshopsController : ControllerBase
     {
+        private readonly UserManager<User> _userManager;
         private readonly IWorkshopRepository _workshopRepo;
         private readonly IServiceRepository _serviceRepo;
         private readonly IRegistrationRepository _registrationRepo;
         private readonly IVehicleRepository _vehicleRepo;
         private readonly IMapper _mapper;
 
-        public WorkshopsController(IWorkshopRepository workshopRepo, IServiceRepository serviceRepo, IMapper mapper, IRegistrationRepository registrationRepo, IVehicleRepository vehicleRepo)
+        public WorkshopsController(IWorkshopRepository workshopRepo, IServiceRepository serviceRepo, IMapper mapper, IRegistrationRepository registrationRepo, IVehicleRepository vehicleRepo, UserManager<User> userManager)
         {
             _workshopRepo = workshopRepo ?? throw new ArgumentNullException(nameof(workshopRepo));
             _serviceRepo = serviceRepo ?? throw new ArgumentNullException(nameof(serviceRepo));
             _registrationRepo = registrationRepo ?? throw new ArgumentNullException(nameof(registrationRepo));
             _vehicleRepo = vehicleRepo ?? throw new ArgumentNullException(nameof(vehicleRepo));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
         /// <summary>
         /// Returns all workshops
@@ -302,7 +305,7 @@ namespace ServiceManagement.Controllers
         /// <param name="registrationCreateDto">Registration data</param>
         /// <returns>Crated registration data</returns>
         [HttpPost("{workshopId}/registrations")]
-        //[Authorize]
+        [Authorize(Roles = "Regular")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -324,6 +327,8 @@ namespace ServiceManagement.Controllers
             Registration registration = _mapper.Map<Registration>(registrationCreateDto);
             registration.VehicleID = createdVehicleId;
             registration.DateRegistered = DateTime.Now;
+            User user = await _userManager.GetUserAsync(HttpContext.User);
+            registration.UserID = user.Id;
             int createdRegistrationId = await _registrationRepo.CreateAsync(registration);
             return CreatedAtAction(nameof(GetWorkshopSingleRegistration), new { workshopId = workshopId, registrationId = createdRegistrationId }, registrationCreateDto);
 
@@ -401,7 +406,7 @@ namespace ServiceManagement.Controllers
         /// <param name="registrationUpdateDto">Updated registration data</param>
         /// <returns></returns>
         [HttpPut("{workshopId}/registrations/{registrationId}")]
-        //[Authorize]
+        //[Authorize(Roles = "Regular")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

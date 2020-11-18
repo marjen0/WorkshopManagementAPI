@@ -4,6 +4,7 @@ using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using ServiceManagement.DTO;
 using ServiceManagement.DTO.User;
 using System;
 using System.Collections.Generic;
@@ -47,7 +48,7 @@ namespace ServiceManagement.Services
 
             return _mapper.Map<UserDto>(newUser);
         }
-        public async Task<string> AuthenticateUserAsync(UserLoginDto userDto)
+        public async Task<LoginResponse> AuthenticateUserAsync(UserLoginDto userDto)
         {
             if (string.IsNullOrEmpty(userDto.Username) || string.IsNullOrEmpty(userDto.Password))
                 throw new ArgumentNullException("email or password is empty");
@@ -60,7 +61,9 @@ namespace ServiceManagement.Services
             string jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? _configuration["Jwt:Key"];
             string token = GenerateJwtToken(user, jwtSecret);
 
-            return token;
+            UserDto userDto1 = _mapper.Map<UserDto>(user);
+            LoginResponse response = new LoginResponse { Token = token, User = userDto1 };
+            return response;
         }
 
 
@@ -78,7 +81,7 @@ namespace ServiceManagement.Services
                     new Claim("username", user.UserName.ToString()),
                     new Claim(ClaimTypes.Role, user.Role.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(60),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

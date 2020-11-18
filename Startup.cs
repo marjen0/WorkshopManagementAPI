@@ -36,12 +36,12 @@ namespace ServiceManagement
             //var appSettingSection = Configuration.GetSection("AppSettings");
             //services.Configure<AppSettings>(appSettingSection);
 
+            services.ConfigureCors();
             services.AddControllers();
             
             services.ConfigureRepositories();
             services.ConfigureAutoMapper();
             services.ConfigureSwagger();
-            services.ConfigureCors();
             services.ConfigureServices();
 
             var key = Encoding.ASCII.GetBytes(jwtSecret);
@@ -61,7 +61,12 @@ namespace ServiceManagement
             {
                 app.UseHttpsRedirection();
             }
-            app.UseCors("AllowOrigins");
+            app.UseCors(builder => builder
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .SetIsOriginAllowed((host) => true)
+                .AllowCredentials()
+            );
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

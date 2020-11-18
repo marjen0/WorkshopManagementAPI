@@ -25,11 +25,10 @@ namespace ServiceManagement.Controllers
         /// </summary>
         /// <returns>A list of mechanics</returns>
         [HttpGet]
-        [Authorize]
+        //[Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        
         public async Task<ActionResult<IEnumerable<Mechanic>>> GetAllMechanics()
         {
             var mechanics = (await _mechanicRepo.GetAllAsync()).ToList();
@@ -49,7 +48,7 @@ namespace ServiceManagement.Controllers
         /// <param name="mechanicId">Mechanic ID</param>
         /// <returns>Mechanic data</returns>
         [HttpGet("{mechanicId}")]
-        [Authorize]
+        //[Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -71,7 +70,7 @@ namespace ServiceManagement.Controllers
         /// <param name="mechanic">Mechanic data</param>
         /// <returns>Created mechanic</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -98,7 +97,7 @@ namespace ServiceManagement.Controllers
         /// <param name="mechanicId">Mechanic ID</param>
         /// <returns></returns>
         [HttpDelete("{mechanicId}")]
-        [Authorize]
+        //[Authorize]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
