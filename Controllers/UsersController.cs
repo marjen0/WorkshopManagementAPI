@@ -29,14 +29,24 @@ namespace ServiceManagement.Controllers
         }
 
         [HttpGet("{userId}/registrations")]
-        //[Authorize(Roles = "Regular")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type =typeof(RegistrationDto))]
         public async Task<ActionResult<IEnumerable<RegistrationDto>>> GetUserRegistrations(int userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                UserDto user = await _userService.GetUserByIdAsync(userId);
+                IEnumerable<RegistrationDto> registrations = await _userService.GetUserRegistrationsAsync(userId);
+                return Ok(registrations);
+            }
+            catch (Exception e)
+            {
+
+                return NotFound(new { message = e.Message});
+            }
         }
         [HttpGet]
         //[Authorize(Roles = "Admin")]
@@ -54,7 +64,6 @@ namespace ServiceManagement.Controllers
             return Ok(users);
         }
 
-
         [HttpGet("current")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -64,7 +73,6 @@ namespace ServiceManagement.Controllers
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
             User user = await _userManager.GetUserAsync(HttpContext.User);
-            throw new Exception();
             if (user == null)
             {
                 return NotFound(new { message = "no users could be found" });

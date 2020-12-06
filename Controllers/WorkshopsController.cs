@@ -305,10 +305,11 @@ namespace ServiceManagement.Controllers
         /// <param name="registrationCreateDto">Registration data</param>
         /// <returns>Crated registration data</returns>
         [HttpPost("{workshopId}/registrations")]
-        [Authorize(Roles = "Regular")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult> CreateRegistration(int workshopId, [FromBody] RegistrationCreateDto registrationCreateDto)
         {

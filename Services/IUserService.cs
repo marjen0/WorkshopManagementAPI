@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.Entities;
+using ServiceManagement.DTO.Registration;
 using ServiceManagement.DTO.User;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,8 @@ namespace ServiceManagement.Services
 {
     public interface IUserService
     {
-        Task<UserDto> GetUserByIdAsync(long id);
+        Task<UserDto> GetUserByIdAsync(int id);
+        Task<IEnumerable<RegistrationDto>> GetUserRegistrationsAsync(int userId);
 
         Task<User> GetUserByEmailAddressAsync(string email);
         Task CreateAsync(UserRegisterDto user);

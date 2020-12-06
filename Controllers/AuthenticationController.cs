@@ -34,7 +34,7 @@ namespace ServiceManagement.Controllers
                 return BadRequest(userDto);
             try
             {
-                UserDto createdUser = await _authService.CreateUserAsync(userDto, UserRole.Admin);
+                UserDto createdUser = await _authService.CreateUserAsync(userDto, UserRole.Regular);
                 return Ok(createdUser);
             }
             catch (Exception e)

@@ -4,6 +4,7 @@ using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using ServiceManagement.DTO.Registration;
 using ServiceManagement.DTO.User;
 using System;
 using System.Collections.Generic;
@@ -20,11 +21,13 @@ namespace ServiceManagement.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IRegistrationRepository _registrationRepository;
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
-        public UserService(IUserRepository userRepository, IMapper mapper, UserManager<User> userManager)
+        public UserService(IUserRepository userRepository, IRegistrationRepository registrationRepository, IMapper mapper, UserManager<User> userManager)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _registrationRepository = registrationRepository ?? throw new ArgumentNullException(nameof(registrationRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
@@ -46,9 +49,27 @@ namespace ServiceManagement.Services
             throw new NotImplementedException();
         }
 
-        public Task<UserDto> GetUserByIdAsync(long id)
+        public async Task<UserDto> GetUserByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            User user = await _userRepository.GetByIdAsync(id);
+            if (user == null)
+            {
+                throw new ArgumentException($"user with id {id} could not be found", nameof(id));
+            }
+            UserDto userDto = _mapper.Map<UserDto>(user);
+            return userDto;
+        }
+
+
+        public async Task<IEnumerable<RegistrationDto>> GetUserRegistrationsAsync(int userId)
+        {
+            IEnumerable<Registration> registrations = await _registrationRepository.GetRegistrationsByUserId(userId);
+            if (registrations == null)
+            {
+                throw new Exception($"no registrations found by user with {userId}");
+            }
+            IEnumerable<RegistrationDto> registrationDtos = registrations.Select(r => _mapper.Map<RegistrationDto>(r));
+            return registrationDtos;
         }
     }
 }
