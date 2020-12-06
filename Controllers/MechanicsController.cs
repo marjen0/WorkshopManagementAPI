@@ -7,7 +7,8 @@ using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using ServiceManagement.DTO.User;
+using ServiceManagement.Services;
 
 namespace ServiceManagement.Controllers
 {
@@ -16,9 +17,11 @@ namespace ServiceManagement.Controllers
     public class MechanicsController : ControllerBase
     {
         private readonly IMechanicRrepository _mechanicRepo;
-        public MechanicsController(IMechanicRrepository mechanicRepo)
+        private readonly IAuthService _authService;
+        public MechanicsController(IMechanicRrepository mechanicRepo, IAuthService authService)
         {
             _mechanicRepo = mechanicRepo ?? throw new ArgumentNullException(nameof(mechanicRepo));
+            _authService = authService ?? throw new ArgumentException(nameof(authService));
         }
         /// <summary>
         /// Returns all mechanics 
@@ -70,26 +73,24 @@ namespace ServiceManagement.Controllers
         /// <param name="mechanic">Mechanic data</param>
         /// <returns>Created mechanic</returns>
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<IEnumerable<Mechanic>>> CreateMechanic([FromBody] Mechanic mechanic)
+        public async Task<ActionResult<IEnumerable<Mechanic>>> CreateMechanic([FromBody] UserRegisterDto userDto)
         {
             if (!ModelState.IsValid)
+                return BadRequest(userDto);
+            try
             {
-                return BadRequest(mechanic);
+                UserDto createdUser = await _authService.CreateUserAsync(userDto, UserRole.Mechanic);
+                return Ok(createdUser);
             }
-            mechanic.LastName = "Kondrotas";
-            mechanic.FirstName = "Lukas";
-            mechanic.Role = UserRole.Mechanic;
-            mechanic.Salary = 2000;
-            mechanic.YearsOfExperience = 7;
-
-            int createdId = await _mechanicRepo.CreateAsync(mechanic);
-
-            return CreatedAtAction(nameof(GetMechanic), new { mechanicId = createdId }, mechanic);
+            catch (Exception e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
         }
         /// <summary>
         /// Deletes specific mechanic
